@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>The Jungle Gym</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <script src="js/three.js"></script>
+    <script id="vertexShader" type="x-shader/x-vertex">
+      // vertex shader's code goes here
+      varying vec3 vNormal;
+      void main() {
+          vNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position.x, position.y, position.z, 1.0);
+      }
+    </script>
+    <script id="fragmentShader" type="x-shader/x-fragment">
+      // fragment shader's code goes here
+      varying vec3 vNormal;
+      void main() {
+          gl_FragColor = vec4(1, 0.70, 0.00, 1.0) * (0.2 + sqrt(max(0.2, dot(vNormal, vec3(0.1,1,0.1)))));
+      }
+    </script>
+    <script src="js/sim.js"></script>
+    <div class="overlay">
+      <h1>The Jungle Gym</h1>
+      <h2>Thomas Carey</h1>
+      <div class="lower-overlay">
+        <a href="/about">ABOUT</a>
+        <a href="/blog">PROJECTS</a>
+        <a href="/cv.txt">CV</a>
+      </div>
+    </div>
+  </body>
+</html>
+

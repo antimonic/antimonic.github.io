@@ -1,0 +1,67 @@
+---
+---
+$title-font: 'Playfair Display', serif;
+@import "minima";
+@import "minima/base";
+@import "minima/layout";
+
+@import "minima/syntax-highlighting";
+
+a {
+  text-decoration: none;
+}
+
+
+body {
+  > h1 {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  > section {
+    margin-left: 30%;
+    margin-right: 30%;
+  }
+}
+
+footer{
+  margin-bottom: 0px;
+  position: absolute;
+  bottom: 0px;
+}
+
+ul {
+    list-style-type: none;
+    li {
+        font-size: 36px;
+    }
+}
+
+
+nav {
+  border-bottom: solid 1px black;
+  height: 100px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  a {
+    font-family: $title-font;
+    margin-left: 10px;
+    color: black;
+    font-size: 48px;
+    &:visited {
+      color: black;
+    }
+    &:first-child {
+      margin-left: 20px;
+    }
+
+  }
+
+}
+
+
+html {
+  font-size: 40px;
+  min-height: 100vh;
+}

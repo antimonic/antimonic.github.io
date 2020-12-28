@@ -1,0 +1,87 @@
+---
+---
+
+$title-font: 'Playfair Display', serif;
+
+
+h1 {
+  font-size: 82px;
+  font-family: $title-font;
+  color: rgba(0.5, 0, 0, 1);
+  margin-bottom: 5px;
+}
+
+h2 {
+    text-align: left;
+    font-family: $title-font;
+    font-size: 36px;
+    margin-top: 5px;
+    magin-left: 10px;
+}
+
+body {
+  background-color: rgba(255,255,255,255);
+  margin: 0;
+}
+.overlay {
+  position: absolute;
+  left: 10%;
+  top: 5%;
+  text-align: center;
+  margin: 0;
+}
+
+.full-card {
+  border: 1px solid black;
+  border-radius: 20px;
+  margin: 5%;
+}
+
+.lower-overlay {
+  display: flex;
+  flex-direction: row;
+  a {
+    margin-left: 10px;
+    font-size: 24px;
+    text-decoration: none;
+    &:visited {
+      color: black;
+    }
+    color: black;
+  }
+}
+
+canvas {
+  z-index: -1;
+}
+
+.full-card-header {
+  border-bottom: 1px solid black;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.full-card-header h2 {
+  margin-right: 15px;
+  font-size: 40px;
+}
+
+.full-card-header a {
+  margin-left: 15px;
+  font-size: 40px;
+  flex-grow: 1;
+}
+
+.full-card-body {
+  margin: 15px;
+}
+
+.project-card {
+  border: 1px solid black;
+  height: 120px;
+  margin-top: 5px;
+}
+
+
+

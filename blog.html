@@ -1,0 +1,36 @@
+---
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Posts</title>
+    <link rel="stylesheet" href="/css/default.css">
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+  <body>
+    <nav>
+      <a href="/">The Jungle Gym</a>
+    </nav>
+    <section>
+      <ul>
+        {% for post in site.posts %}
+        <li>
+          <div class="post-card">
+              <div class="post-title">
+                  <a href="{{ post.url }}">{{ post.title }}</a>
+              </div>
+              <div class="post-date">
+                  {{ post.date | date_to_long_string }}
+              </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    <footer>
+      &copy; to me
+    </footer>
+  </body>
+</html>
+
