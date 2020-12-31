@@ -1,14 +1,17 @@
+---
+---
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>The Jungle Gym</title>
-    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href={{"/css/index.css" | relative_url }}>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
   </head>
   <body>
     <script src="js/three.js"></script>
+    <script src="js/cannon.min.js"></script>
     <script id="vertexShader" type="x-shader/x-vertex">
       // vertex shader's code goes here
       varying vec3 vNormal;
@@ -21,13 +24,13 @@
       // fragment shader's code goes here
       varying vec3 vNormal;
       void main() {
-          gl_FragColor = vec4(1, 0.70, 0.00, 1.0) * (0.2 + sqrt(max(0.2, dot(vNormal, vec3(0.1,1,0.1)))));
+          gl_FragColor = vec4(1, 0.70, 0.00, 1.0) * (0.2 + sqrt(max(0.2, dot(vNormal, vec3(-0.3,1,0.3)))));
       }
     </script>
     <script src="js/sim.js"></script>
+    <div class="instructions">Click and drag to interact.<br /> Scroll to slide and F to Launch objects.</div>
     <div class="overlay">
       <h1>The Jungle Gym</h1>
-      <h2>Thomas Carey</h1>
       <div class="lower-overlay">
         <a href="/about">ABOUT</a>
         <a href="/blog">PROJECTS</a>

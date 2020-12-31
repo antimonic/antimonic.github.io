@@ -21,7 +21,7 @@
 title: Thomas Carey
 email: thomas@thomascarey.us
 description: "Why are we still here"
-baseurl: "/personal-site" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://antimonic.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username:  pureantimonic

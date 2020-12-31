@@ -12,6 +12,11 @@
     <nav>
       <a href="/">The Jungle Gym</a>
     </nav>
+    <div class='main'>
+        <div class='header'>
+            <a href="/"><- Back</a>
+            <h1>{{ page.title }}</h1>
+        </div>
     <section>
       <ul>
         {% for post in site.posts %}
@@ -28,6 +33,7 @@
         {% endfor %}
       </ul>
     </section>
+    </div>
     <footer>
       &copy; to me
     </footer>
