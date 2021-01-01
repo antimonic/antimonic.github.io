@@ -394,11 +394,13 @@ table td { border: 1px solid #e8e8e8; }
 
 a { text-decoration: none; }
 
+.post-card { border-bottom: solid 1px black; }
+
 .header { display: flex; flex-direction: row; justify-content: space-between; }
 .header a { margin-top: 25px; align-self: left; }
-.header h1 { font-family: "Playfair Display", serif; flex-grow: 1; text-align: center; align-self: middle; margin-right: 150px; }
+.header h1 { font-family: "Playfair Display", serif; flex-grow: 1; text-align: center; font-size: 64px; align-self: middle; margin-right: 150px; }
 
-.main { margin-left: auto; margin-right: auto; text-align: left; font-size: 36px; max-width: 1200px; }
+.main { font-size: 24px; margin-left: auto; margin-right: auto; text-align: left; max-width: 1200px; }
 
 body > h1 { margin-left: auto; margin-right: auto; }
 body > section { margin-left: 30%; margin-right: 30%; }

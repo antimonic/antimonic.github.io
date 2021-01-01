@@ -3,6 +3,7 @@ layout: post
 title:  "Test Post"
 date:   2020-12-28 12:01:48 -0500
 categories: housekeeping
+desc: Just a sample post for testing purposes.
 ---
 Hello. This is the first post, mainly to test the blog architecture. 
 

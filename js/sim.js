@@ -165,10 +165,11 @@ testCube.castShadow = true;
 meshes.push(testCube);
 scene.add(testCube);
 const physTestCube = new CANNON.Body({
-    mass: 5,
+    mass: 50,
     position: new CANNON.Vec3(-4, 4, 0),
     shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5)),
-    linearDamping: 0.7
+    linearDamping: 0.6,
+    angularDamping: 0.6
 })
 physTestCube.quaternion.setFromEuler(0, -0.2, 0);
 bodies.push(physTestCube);
@@ -179,10 +180,11 @@ largeTestCube.castShadow = true;
 meshes.push(largeTestCube);
 scene.add(largeTestCube);
 const largPhysTestCube = new CANNON.Body({
-    mass: 5,
+    mass: 100,
     position: new CANNON.Vec3(-6, 6, 0),
     shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-    linearDamping: 0.7
+    linearDamping: 0.6,
+    angularDamping: 0.6
 })
 largPhysTestCube.position.set(-4.128, 1.5, -0.28);
 largPhysTestCube.quaternion.setFromEuler(0, 0.15, 0);
@@ -275,7 +277,7 @@ function onMouseDown (e) {
      constrained = new CANNON.Body({ mass: 0, position: hitPoint });
      const toContact = hitPoint.vsub(body.position);
      const transform = CANNON.Transform;
-     constraint = new CANNON.PointToPointConstraint(constrained, new CANNON.Vec3(0,0,0), body, body.pointToLocalFrame(hitPoint), 5);
+     constraint = new CANNON.PointToPointConstraint(constrained, new CANNON.Vec3(0,0,0), body, body.pointToLocalFrame(hitPoint), 4);
      world.add(constrained);
      world.addConstraint(constraint);
    }
@@ -297,7 +299,7 @@ document.onkeypress = function (e){
         if(isHolding){
             const forward = new THREE.Vector3(0, 0, -1);
             forward.applyQuaternion(camera.quaternion);
-            forward.multiplyScalar(50);
+            forward.multiplyScalar(500);
             onMouseUp();
             heldBody.applyImpulse(forward, heldBody.position);
         }
