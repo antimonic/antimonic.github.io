@@ -9,5 +9,5 @@ desc: Voxel Octrees provide an interesting way to render voxel worlds with ray t
 
 # Octrees
 
-Octrees are a super common data structure which divides recursively divides space. Its easiest to show visually:
+Octrees are a super common data structure which recursively divides space. Its easiest to show visually:
 

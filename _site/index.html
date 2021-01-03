@@ -20,9 +20,12 @@
     </script>
     <script id="fragmentShader" type="x-shader/x-fragment">
       // fragment shader's code goes here
+      uniform sampler2D fullRender;  
+      uniform float width;
+      uniform float height;
       varying vec3 vNormal;
       void main() {
-          gl_FragColor = vec4(1, 0.70, 0.00, 1.0) * (0.2 + sqrt(max(0.2, dot(vNormal, vec3(-0.3,1,0.3)))));
+          gl_FragColor = texture(fullRender, vec2(gl_FragCoord.x / width, gl_FragCoord.y / height));
       }
     </script>
     <script src="js/sim.js"></script>
