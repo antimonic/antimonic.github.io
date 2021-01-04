@@ -34,7 +34,7 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setClearColor( 0xFFFFFF, 1 );
 renderer.setSize( window.innerWidth, window.innerHeight );
 const renderTargetL = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight);
-const renderTargetR = new THREE.WebGLRenderTarget( 512, 512, { format: THREE.RGBFormat } );
+const renderTargetR = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight);
 document.body.appendChild( renderer.domElement );
 
 const cubeGeometry = new THREE.BoxGeometry(1);
@@ -63,27 +63,26 @@ const activeMaterial = new THREE.MeshPhongMaterial({
 });
 
 const behindMaterial = new THREE.MeshBasicMaterial({
-    color: 0xFF0000
+    color: 0xFFFFFF
 })
 
 const floorMaterial = new THREE.MeshPhongMaterial({
-    color: 0x00FFFF
+    color: 0xFFFFFF
 });
 
 const backMaterial = new THREE.MeshPhongMaterial({
-    color: 0x00FF00
+    color: 0xFFFFFF
 });
 
 const leftMaterial = new THREE.MeshPhongMaterial({
-    color: 0xFFFF00
+    color: 0xFFFFFF
 });
 
-const directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 1.4);
+const directionalLight = new THREE.PointLight( 0xFFFFFF, 1.4, 30, 1);
 directionalLight.castShadow = true;
 directionalLight.position.set(8, 8, 8);
-directionalLight.target.position.set(-8, -8, -8);
-directionalLight.shadow.mapSize.width = 1024;
-directionalLight.shadow.mapSize.height = 1024;
+directionalLight.shadow.mapSize.width = window.innerWidth;
+directionalLight.shadow.mapSize.height = window.innerHeight;
 directionalLight.shadow.camera.near = 0.1;
 directionalLight.shadow.camera.far = 500;
 const d = 24;
@@ -92,7 +91,6 @@ directionalLight.shadow.camera.right = d;
 directionalLight.shadow.camera.top = d;
 directionalLight.shadow.camera.bottom = -d;
 scene.add(directionalLight);
-scene.add(directionalLight.target);
 renderer.shadowMap.enabled = true;
 
 const pointLight = new THREE.PointLight(0xFF0000, 1.5, 20, 2);
@@ -234,20 +232,20 @@ portalL.position.set(-7.2,4,4);
 var portalR = new THREE.Mesh( planelikeGeometry, portalRMaterial );
 portalR.position.set(-3,4,-7.4);
 portalL.rotation.set(0, Math.PI / 2, 0);
-portalLCamera.position.copy(portalR.position);
-var forwardL = new THREE.Vector3(0, 0, 1).applyQuaternion(portalR.quaternion);
-var clipPlaneL = new THREE.Plane(forwardL, -forwardL.dot(portalR.position));
-var forwardR = new THREE.Vector3(0, 0, 1).applyQuaternion(portalL.quaternion);
-var clipPlaneR = new THREE.Plane(forwardR, -forwardR.dot(portalL.position));
-var relToR = camera.position.clone().sub(portalR.position);
-var relToL = camera.position.clone().sub(portalL.position);
-var lToRPortal = portalR.quaternion.clone().multiply((portalL.quaternion.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0, 'XYZ')))).conjugate())
-var rToLPortal = lToRPortal.clone().conjugate();
-portalRCamera.position.copy(relToR.applyQuaternion(rToLPortal).add(portalL.position));
-portalRCamera.quaternion.copy(rToLPortal.clone().multiply(camera.quaternion));
-
-portalLCamera.position.copy(relToL.applyQuaternion(lToRPortal).add(portalR.position));
-portalLCamera.quaternion.copy(lToRPortal.clone().multiply(camera.quaternion));
+var portalLBody = new CANNON.Body({
+    mass: 5,
+    position: new CANNON.Vec3(-7.2, 4,4),
+    shape: new CANNON.Box(new CANNON.Vec3(1, 2, 0.1))
+});
+var portalBaseGeometry = new THREE.BoxGeometry( 2, 4, 0.2 );
+var portalLBase = new THREE.Mesh ( portalBaseGeometry, new THREE.MeshPhongMaterial() );
+portalL.add(portalLBase);
+portalLBase.position.set(0, 0, 0);
+scene.add(portalLBase);
+world.add(portalLBody);
+portalLBody.quaternion.setFromEuler(0, Math.PI / 2, 0);
+meshes.push(portalL);
+bodies.push(portalLBody);
 
 scene.add(portalL);
 scene.add(portalR);
@@ -352,11 +350,31 @@ function scroll(e){
 
 const basicPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 6);
 
+var clipPlaneL;
+var clipPlaneR;
+function updatePortals() {
+    portalLCamera.position.copy(portalR.position);
+    var forwardL = new THREE.Vector3(0, 0, 1).applyQuaternion(portalR.quaternion);
+    clipPlaneL = new THREE.Plane(forwardL, -forwardL.dot(portalR.position));
+    var forwardR = new THREE.Vector3(0, 0, 1).applyQuaternion(portalL.quaternion);
+    clipPlaneR = new THREE.Plane(forwardR, -forwardR.dot(portalL.position));
+    var relToR = camera.position.clone().sub(portalR.position);
+    var relToL = camera.position.clone().sub(portalL.position);
+    var lToRPortal = portalR.quaternion.clone().multiply((new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0, 'XYZ')).multiply(portalL.quaternion)).conjugate())
+    var rToLPortal = lToRPortal.clone().conjugate();
+    portalRCamera.position.copy(relToR.applyQuaternion(rToLPortal).add(portalL.position));
+    portalRCamera.quaternion.copy(rToLPortal.clone().multiply(camera.quaternion));
+    portalLCamera.position.copy(relToL.applyQuaternion(lToRPortal).add(portalR.position));
+    portalLCamera.quaternion.copy(lToRPortal.clone().multiply(camera.quaternion));
+}
+
 function render() {
     for(var i = 0; i < bodies.length; i++){
         meshes[i].position.copy(bodies[i].position);
         meshes[i].quaternion.copy(bodies[i].quaternion);
     }
+    updatePortals();
+
     renderer.setRenderTarget(renderTargetR);
     renderer.clippingPlanes = [ clipPlaneR ];
     renderer.render(scene, portalRCamera);
