@@ -1,8 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-01-03T20:05:08-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Thomas Carey</title><subtitle>Why are we still here</subtitle><entry><title type="html">Sparse Voxel Octrees</title><link href="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html" rel="alternate" type="text/html" title="Sparse Voxel Octrees" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree</id><content type="html" xml:base="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html">&lt;p&gt;&lt;a href=&quot;https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf&quot;&gt;This NVidia paper&lt;/a&gt; is really cool.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-01-05T01:33:33-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Thomas Carey</title><subtitle>Why are we still here</subtitle><entry><title type="html">Voxel Game Engine - Sparse Voxel Octrees</title><link href="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html" rel="alternate" type="text/html" title="Voxel Game Engine - Sparse Voxel Octrees" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree</id><content type="html" xml:base="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html">&lt;h1 id=&quot;a-voxel-engine&quot;&gt;A Voxel Engine&lt;/h1&gt;
+
+&lt;p&gt;Allowing players direct control over the geometry of the world space is the ultimate goal of a sandbox game. Voxels provide an expensive but complete
+solution by dividing up 3D space into discrete units and allowing the players to manipulate and interact with each unit. Minecraft is the greatest
+implementation as of yet of a complete Voxel world, but the low spatial resolution (1 block \(\approx\) 1 cubic meter) and simple lighting and physics systems restricts
+the gameplay potential of the engine.&lt;/p&gt;
+
+&lt;p&gt;This series will follow my attempt to build a voxel game engine in C++ using OpenGL which can do the following:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Operate at a much higher spatial resolution than Minecraft&lt;/li&gt;
+  &lt;li&gt;Allow physics entities which can interact with the voxel environment without being locked to the voxel grid&lt;/li&gt;
+  &lt;li&gt;Allow realtime lighting and shadows&lt;/li&gt;
+  &lt;li&gt;Allow multiplayer&lt;/li&gt;
+  &lt;li&gt;Allow arbitrary-size worlds with a reasonable memory footprint&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Obviously I don’t really expect to fulfill all of these goals but I think it will be more fun to aim for everything and look for a system which provides an
+elegant general solution.&lt;/p&gt;
+
+&lt;h1 id=&quot;sparse-voxel-octrees&quot;&gt;Sparse Voxel Octrees&lt;/h1&gt;
+
+&lt;p&gt;Almost everything in this article is derived from &lt;a href=&quot;https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf&quot;&gt;this NVidia paper&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h1 id=&quot;octrees&quot;&gt;Octrees&lt;/h1&gt;
 
-&lt;p&gt;Octrees are a super common data structure which recursively divides space. Its easiest to show visually:&lt;/p&gt;</content><author><name></name></author><category term="graphics" /><summary type="html">This NVidia paper is really cool.</summary></entry><entry><title type="html">Test Post</title><link href="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Test Post" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html">&lt;p&gt;Hello. This is the first post, mainly to test the blog architecture.&lt;/p&gt;
+&lt;p&gt;Octrees are a common data structure which allows us to recursively divide 3D space.
+We can think of our world space as a root node with 8 children, who themselves have 8 children, and so on as needed.
+Its easiest to show visually:&lt;/p&gt;
+
+&lt;p&gt;The simplest way to represent 3D space with an octree is to build a full octree down to the spatial resolution we need. The depth of the tree is the 8th root of the number of voxels we want to represent. For a world with only 8 voxels, we need only a single layer octree, a single root with 8 octant children. Once we have a full tree, we can attach a single bit to each node which represents the state of the voxel. This alone would allow us to approximate arbitrary geometry.&lt;/p&gt;</content><author><name></name></author><category term="graphics" /><summary type="html">A Voxel Engine</summary></entry><entry><title type="html">Test Post</title><link href="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Test Post" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html">&lt;p&gt;Hello. This is the first post, mainly to test the blog architecture.&lt;/p&gt;
 
 &lt;p&gt;This is all powered with a Ruby framework called &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt;.&lt;/p&gt;
 

@@ -8,6 +8,8 @@
     <link rel="stylesheet" href={{"/css/index.css" | relative_url }}>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <script type="text/javascript"
+              src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
   </head>
   <body>
     <script src="js/three.js"></script>
@@ -22,7 +24,7 @@
     </script>
     <script id="fragmentShader" type="x-shader/x-fragment">
       // fragment shader's code goes here
-      uniform sampler2D fullRender;  
+      uniform sampler2D fullRender;
       uniform float width;
       uniform float height;
       varying vec3 vNormal;

@@ -405,10 +405,8 @@ a { text-decoration: none; }
 body > h1 { margin-left: auto; margin-right: auto; }
 body > section { margin-left: 30%; margin-right: 30%; }
 
-footer { margin-bottom: 0px; position: absolute; bottom: 0px; }
-
 ul { list-style-type: none; }
-ul li { font-size: 36px; }
+ul li { font-size: 20px; }
 
 nav { border-bottom: solid 1px black; height: 100px; display: flex; flex-direction: row; align-items: center; justify-content: center; }
 nav a { font-family: "Playfair Display", serif; margin-left: 10px; color: black; font-size: 48px; }

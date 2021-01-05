@@ -2,8 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Sparse Voxel Octrees</title>
+    <title>Voxel Game Engine - Sparse Voxel Octrees</title>
     <link rel="stylesheet" href="/css/default.css">
+    <script type="text/javascript"
+              src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
   </head>
   <body>
     <nav>
@@ -12,25 +14,49 @@
     <div class='main'>
         <div class='header'>
             <a href="/blog"><- Back</a>
-            <h1>Sparse Voxel Octrees</h1>
+            <h1>Voxel Game Engine - Sparse Voxel Octrees</h1>
         </div>
     <section class="about-main">
       <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Sparse Voxel Octrees</h1>
+    <h1 class="post-title p-name" itemprop="name headline">Voxel Game Engine - Sparse Voxel Octrees</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="2020-12-28T12:01:48-05:00" itemprop="datePublished">Dec 28, 2020
       </time></p>
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <p><a href="https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf">This NVidia paper</a> is really cool.</p>
+    <h1 id="a-voxel-engine">A Voxel Engine</h1>
+
+<p>Allowing players direct control over the geometry of the world space is the ultimate goal of a sandbox game. Voxels provide an expensive but complete
+solution by dividing up 3D space into discrete units and allowing the players to manipulate and interact with each unit. Minecraft is the greatest
+implementation as of yet of a complete Voxel world, but the low spatial resolution (1 block \(\approx\) 1 cubic meter) and simple lighting and physics systems restricts
+the gameplay potential of the engine.</p>
+
+<p>This series will follow my attempt to build a voxel game engine in C++ using OpenGL which can do the following:</p>
+<ul>
+  <li>Operate at a much higher spatial resolution than Minecraft</li>
+  <li>Allow physics entities which can interact with the voxel environment without being locked to the voxel grid</li>
+  <li>Allow realtime lighting and shadows</li>
+  <li>Allow multiplayer</li>
+  <li>Allow arbitrary-size worlds with a reasonable memory footprint</li>
+</ul>
+
+<p>Obviously I don’t really expect to fulfill all of these goals but I think it will be more fun to aim for everything and look for a system which provides an
+elegant general solution.</p>
+
+<h1 id="sparse-voxel-octrees">Sparse Voxel Octrees</h1>
+
+<p>Almost everything in this article is derived from <a href="https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf">this NVidia paper</a>.</p>
 
 <h1 id="octrees">Octrees</h1>
 
-<p>Octrees are a super common data structure which recursively divides space. Its easiest to show visually:</p>
+<p>Octrees are a common data structure which allows us to recursively divide 3D space.
+We can think of our world space as a root node with 8 children, who themselves have 8 children, and so on as needed.
+Its easiest to show visually:</p>
 
+<p>The simplest way to represent 3D space with an octree is to build a full octree down to the spatial resolution we need. The depth of the tree is the 8th root of the number of voxels we want to represent. For a world with only 8 voxels, we need only a single layer octree, a single root with 8 octant children. Once we have a full tree, we can attach a single bit to each node which represents the state of the voxel. This alone would allow us to approximate arbitrary geometry.</p>
 
   </div><a class="u-url" href="/graphics/2020/12/28/sparse-voxel-octree.html" hidden></a>
 </article>

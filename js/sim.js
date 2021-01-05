@@ -224,19 +224,21 @@ var startPos;
 var constrained;
 var heldBody;
 
-
-
 var planelikeGeometry = new THREE.PlaneGeometry( 2, 4);
+
 var portalL = new THREE.Mesh( planelikeGeometry, portalLMaterial);
 portalL.position.set(-7.2,4,4);
+
 var portalR = new THREE.Mesh( planelikeGeometry, portalRMaterial );
 portalR.position.set(-3,4,-7.4);
 portalL.rotation.set(0, Math.PI / 2, 0);
+
 var portalLBody = new CANNON.Body({
     mass: 5,
     position: new CANNON.Vec3(-7.2, 4,4),
     shape: new CANNON.Box(new CANNON.Vec3(1, 2, 0.1))
 });
+
 var portalBaseGeometry = new THREE.BoxGeometry( 2, 4, 0.2 );
 var portalLBase = new THREE.Mesh ( portalBaseGeometry, new THREE.MeshPhongMaterial() );
 portalL.add(portalLBase);
@@ -246,7 +248,6 @@ world.add(portalLBody);
 portalLBody.quaternion.setFromEuler(0, Math.PI / 2, 0);
 meshes.push(portalL);
 bodies.push(portalLBody);
-
 scene.add(portalL);
 scene.add(portalR);
 
@@ -257,7 +258,7 @@ function frame(currTime){
       deltaTime = 0;
     }
     lastTime = currTime;
-        
+
     if(isHolding){
        const forward = new THREE.Vector3(0, 0, -1);
        forward.applyQuaternion(camera.quaternion);
@@ -277,7 +278,6 @@ function frame(currTime){
     render();
     requestAnimationFrame(frame);
 }
-
 
 function onMouseDown (e) {
    raycaster.setFromCamera( mouse, camera );
@@ -308,7 +308,6 @@ function onMouseDown (e) {
      world.add(constrained);
      world.addConstraint(constraint);
    }
-   
 }
 
 function onMouseUp (e) {
