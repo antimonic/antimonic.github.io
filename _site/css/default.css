@@ -392,6 +392,10 @@ table td { border: 1px solid #e8e8e8; }
 .highlight .vi { color: #008080; }
 .highlight .il { color: #099; }
 
+.image { text-align: center; }
+.image img { margin: auto; }
+.image figcaption { font-size: 18px; }
+
 a { text-decoration: none; }
 
 .post-card { border-bottom: solid 1px black; }

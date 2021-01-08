@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-01-08T11:47:02-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Thomas Carey</title><subtitle>Why are we still here</subtitle><entry><title type="html">Voxel Game Engine - Sparse Voxel Octrees</title><link href="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html" rel="alternate" type="text/html" title="Voxel Game Engine - Sparse Voxel Octrees" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree</id><content type="html" xml:base="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html">&lt;h1 id=&quot;a-voxel-engine&quot;&gt;A Voxel Engine&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-01-08T14:18:33-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Thomas Carey</title><subtitle>Why are we still here</subtitle><entry><title type="html">Voxel Game Engine - Sparse Voxel Octrees</title><link href="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html" rel="alternate" type="text/html" title="Voxel Game Engine - Sparse Voxel Octrees" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree</id><content type="html" xml:base="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html">&lt;h1 id=&quot;a-voxel-engine&quot;&gt;A Voxel Engine&lt;/h1&gt;
 
 &lt;p&gt;Allowing players direct control over the geometry of the world space is the ultimate goal of a sandbox game. Voxels provide an expensive but complete
 solution by dividing up 3D space into discrete units and allowing the players to manipulate and interact with each unit. Minecraft is the greatest
@@ -19,7 +19,7 @@ elegant general solution.&lt;/p&gt;
 
 &lt;h1 id=&quot;sparse-voxel-octrees&quot;&gt;Sparse Voxel Octrees&lt;/h1&gt;
 
-&lt;p&gt;Almost everything in this article is derived from &lt;a href=&quot;https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf&quot;&gt;this Nvidia paper&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Almost everything in this article is derived from &lt;a href=&quot;https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf&quot;&gt;this Nvidia paper&lt;/a&gt;, but its a bit hard to parse for someone new to raytracing. The purpose of this article is to explain the math in the article and how I applied it to a voxel engine.&lt;/p&gt;
 
 &lt;h1 id=&quot;octrees&quot;&gt;Octrees&lt;/h1&gt;
 
@@ -33,18 +33,33 @@ Its easiest to show visually:&lt;/p&gt;
 
 &lt;h1 id=&quot;ray-tracing-with-octrees&quot;&gt;Ray Tracing with Octrees&lt;/h1&gt;
 
-&lt;p&gt;Once we have a data structure which represents the voxel space, we need an algorithm to take a ray and intersect it with the geometry.&lt;/p&gt;
+&lt;p&gt;Once we have a data structure which represents the voxel space, we need an algorithm to take a ray and tell us whether or not we hit the geometry. Recall that ray tracing means shooting out a ray for each pixel on the screen. If, for each pixel, we know whether or not the geometry is in its line of sight, we can render the geometry.&lt;/p&gt;
+
+&lt;p&gt;We represent rays as a parameterized line, 
+\(r(t) = o + t * d\)
+where \(o\) is a 3D vector which represents the starting point of the ray, and \(d\) is a 3D vector which represents the direction of the ray. As \(t\) increases from 0, we travel along the ray away from the starting point in the direction \(d\).&lt;/p&gt;
 
 &lt;h2 id=&quot;box-intersection&quot;&gt;Box Intersection&lt;/h2&gt;
 
-&lt;p&gt;Everything with raytracing against an octree boils down to intersecting against boxes. We can think of a box as three spaces between pairs of planes, one for each axis of the box.&lt;/p&gt;
+&lt;p&gt;Everything with raytracing against an octree boils down to intersecting against boxes. We can think of a box as the intersection of three spaces between pairs of planes, one for each axis of the box.&lt;/p&gt;
 
-&lt;image&gt;
+&lt;figure class=&quot;image&quot;&gt;
+      &lt;img src=&quot;/assets/diagrams/planesdiag.png&quot; alt=&quot;Two of the pairs of planes which define the boundaries of a box. Planes in the same pair are colored the same. Paired planes are parallel, and we can think of the space between them as a plane with some thickness. The overlap of all three of these spaces is the box itself.&quot; /&gt;
+      &lt;figcaption&gt;Two of the pairs of planes which define the boundaries of a box. Planes in the same pair are colored the same. Paired planes are parallel, and we can think of the space between them as a plane with some thickness. The overlap of all three of these spaces is the box itself.&lt;/figcaption&gt;
+&lt;/figure&gt;
 
-We find the time *t* when the ray enters and exits each of these spaces. This gives us three pairs of (t_{min}) and
+&lt;p&gt;Using our parameterized form of the ray, we find the time &lt;em&gt;t&lt;/em&gt; when the ray enters and exits each of these spaces; both should exist as long as the ray is not parallel to one of these planes (we’ll address that later). This gives us three pairs of \((t_{min},t_{max})\) for the times during which the ray is passing through these spaces. If all three of these bands of times overlap at any point, we know there exists a point during which the ray was in all three spaces, meaning it was inside the box. We can check this by taking the largest \(t_{min}\) and checking if it is lower than the smallest \(t_{max}\).&lt;/p&gt;
 
-To check whether a ray intersects a box, we need to check against the plane containing each face of the box. Intersecting with an octree world is especially easy because each voxel is *axis-aligned*, meaning each face of the cube is perpendicular to the x,y, or z-axis. This means each plane is defined
-&lt;/image&gt;</content><author><name></name></author><category term="graphics" /><summary type="html">A Voxel Engine</summary></entry><entry><title type="html">Test Post</title><link href="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Test Post" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html">&lt;p&gt;Hello. This is the first post, mainly to test the blog architecture.&lt;/p&gt;
+&lt;p&gt;The expense part of the math here is intersecting the ray with each of the 6 planes to get the six &lt;em&gt;t&lt;/em&gt;’s. Each of these operations takes &lt;a href=&quot;https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection&quot;&gt;multiple dot products&lt;/a&gt;, and
+doing this for many boxes for each ray could get expensive.&lt;/p&gt;
+
+&lt;p&gt;We can make intersecting the ray with each plane much easier by ensuring every voxel is &lt;em&gt;axis-aligned&lt;/em&gt;, meaning each face of the cube is perpendicular to the x,y, or z-axis. This means that the equation for each plane is simply something like \(x = 3\), and we need only check when the ray crosses this point in the x-axis. This makes the equation for solving for &lt;em&gt;t&lt;/em&gt; single dimensional and extremely cheap.&lt;/p&gt;
+
+&lt;h2 id=&quot;octree-intersection&quot;&gt;Octree Intersection&lt;/h2&gt;
+
+&lt;p&gt;Intersecting with an octree is much similar, the only additional piece of information we need is which octant of the cube we hit. We can achieve this by also measuring the time at which the ray passes the center of each of the plane spaces, \(t_{center}\).&lt;/p&gt;
+
+&lt;p&gt;This post will be added to and edited over time. Last updated: 1/8/21.&lt;/p&gt;</content><author><name></name></author><category term="graphics" /><summary type="html">A Voxel Engine</summary></entry><entry><title type="html">Test Post</title><link href="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Test Post" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html">&lt;p&gt;Hello. This is the first post, mainly to test the blog architecture.&lt;/p&gt;
 
 &lt;p&gt;This is all powered with a Ruby framework called &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt;.&lt;/p&gt;
 

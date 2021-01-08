@@ -7,6 +7,16 @@ $title-font: 'Playfair Display', serif;
 
 @import "minima/syntax-highlighting";
 
+.image {
+    img {
+        margin: auto;
+    }
+    text-align:center;
+    figcaption{
+        font-size: 18px;
+    }
+}
+
 a {
   text-decoration: none;
 }
