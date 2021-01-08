@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-01-05T01:33:33-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Thomas Carey</title><subtitle>Why are we still here</subtitle><entry><title type="html">Voxel Game Engine - Sparse Voxel Octrees</title><link href="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html" rel="alternate" type="text/html" title="Voxel Game Engine - Sparse Voxel Octrees" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree</id><content type="html" xml:base="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html">&lt;h1 id=&quot;a-voxel-engine&quot;&gt;A Voxel Engine&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-01-08T11:47:02-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Thomas Carey</title><subtitle>Why are we still here</subtitle><entry><title type="html">Voxel Game Engine - Sparse Voxel Octrees</title><link href="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html" rel="alternate" type="text/html" title="Voxel Game Engine - Sparse Voxel Octrees" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree</id><content type="html" xml:base="http://localhost:4000/graphics/2020/12/28/sparse-voxel-octree.html">&lt;h1 id=&quot;a-voxel-engine&quot;&gt;A Voxel Engine&lt;/h1&gt;
 
 &lt;p&gt;Allowing players direct control over the geometry of the world space is the ultimate goal of a sandbox game. Voxels provide an expensive but complete
 solution by dividing up 3D space into discrete units and allowing the players to manipulate and interact with each unit. Minecraft is the greatest
@@ -19,7 +19,7 @@ elegant general solution.&lt;/p&gt;
 
 &lt;h1 id=&quot;sparse-voxel-octrees&quot;&gt;Sparse Voxel Octrees&lt;/h1&gt;
 
-&lt;p&gt;Almost everything in this article is derived from &lt;a href=&quot;https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf&quot;&gt;this NVidia paper&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Almost everything in this article is derived from &lt;a href=&quot;https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf&quot;&gt;this Nvidia paper&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h1 id=&quot;octrees&quot;&gt;Octrees&lt;/h1&gt;
 
@@ -27,7 +27,24 @@ elegant general solution.&lt;/p&gt;
 We can think of our world space as a root node with 8 children, who themselves have 8 children, and so on as needed.
 Its easiest to show visually:&lt;/p&gt;
 
-&lt;p&gt;The simplest way to represent 3D space with an octree is to build a full octree down to the spatial resolution we need. The depth of the tree is the 8th root of the number of voxels we want to represent. For a world with only 8 voxels, we need only a single layer octree, a single root with 8 octant children. Once we have a full tree, we can attach a single bit to each node which represents the state of the voxel. This alone would allow us to approximate arbitrary geometry.&lt;/p&gt;</content><author><name></name></author><category term="graphics" /><summary type="html">A Voxel Engine</summary></entry><entry><title type="html">Test Post</title><link href="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Test Post" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html">&lt;p&gt;Hello. This is the first post, mainly to test the blog architecture.&lt;/p&gt;
+&lt;p&gt;The simplest way to represent 3D space with an octree is to build a full octree down to the spatial resolution we need. The depth of the tree is the 8th root of the number of voxels we want to represent. For a world with only 8 voxels, we need only a single layer octree, a single root with 8 octant children. Once we have a full tree, we can attach a single bit to each node which represents whether each voxel is on or off. This alone would allow us to approximate arbitrary geometry.&lt;/p&gt;
+
+&lt;p&gt;The structure of an octree allows us to cull children which do not add extra information. If all of a nodes children have the same state, we can remove the children and make that node a larger leaf node.&lt;/p&gt;
+
+&lt;h1 id=&quot;ray-tracing-with-octrees&quot;&gt;Ray Tracing with Octrees&lt;/h1&gt;
+
+&lt;p&gt;Once we have a data structure which represents the voxel space, we need an algorithm to take a ray and intersect it with the geometry.&lt;/p&gt;
+
+&lt;h2 id=&quot;box-intersection&quot;&gt;Box Intersection&lt;/h2&gt;
+
+&lt;p&gt;Everything with raytracing against an octree boils down to intersecting against boxes. We can think of a box as three spaces between pairs of planes, one for each axis of the box.&lt;/p&gt;
+
+&lt;image&gt;
+
+We find the time *t* when the ray enters and exits each of these spaces. This gives us three pairs of (t_{min}) and
+
+To check whether a ray intersects a box, we need to check against the plane containing each face of the box. Intersecting with an octree world is especially easy because each voxel is *axis-aligned*, meaning each face of the cube is perpendicular to the x,y, or z-axis. This means each plane is defined
+&lt;/image&gt;</content><author><name></name></author><category term="graphics" /><summary type="html">A Voxel Engine</summary></entry><entry><title type="html">Test Post</title><link href="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Test Post" /><published>2020-12-28T12:01:48-05:00</published><updated>2020-12-28T12:01:48-05:00</updated><id>http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/housekeeping/2020/12/28/welcome-to-jekyll.html">&lt;p&gt;Hello. This is the first post, mainly to test the blog architecture.&lt;/p&gt;
 
 &lt;p&gt;This is all powered with a Ruby framework called &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt;.&lt;/p&gt;
 

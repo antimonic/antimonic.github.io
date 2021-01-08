@@ -24,7 +24,7 @@ elegant general solution.
 
 # Sparse Voxel Octrees
 
-Almost everything in this article is derived from [this NVidia paper](https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf).
+Almost everything in this article is derived from [this Nvidia paper](https://research.nvidia.com/sites/default/files/pubs/2010-02_Efficient-Sparse-Voxel/laine2010tr1_paper.pdf).
 
 
 # Octrees
@@ -33,5 +33,20 @@ Octrees are a common data structure which allows us to recursively divide 3D spa
 We can think of our world space as a root node with 8 children, who themselves have 8 children, and so on as needed.
 Its easiest to show visually:
 
+The simplest way to represent 3D space with an octree is to build a full octree down to the spatial resolution we need. The depth of the tree is the 8th root of the number of voxels we want to represent. For a world with only 8 voxels, we need only a single layer octree, a single root with 8 octant children. Once we have a full tree, we can attach a single bit to each node which represents whether each voxel is on or off. This alone would allow us to approximate arbitrary geometry.
 
-The simplest way to represent 3D space with an octree is to build a full octree down to the spatial resolution we need. The depth of the tree is the 8th root of the number of voxels we want to represent. For a world with only 8 voxels, we need only a single layer octree, a single root with 8 octant children. Once we have a full tree, we can attach a single bit to each node which represents the state of the voxel. This alone would allow us to approximate arbitrary geometry.
+The structure of an octree allows us to cull children which do not add extra information. If all of a nodes children have the same state, we can remove the children and make that node a larger leaf node.
+
+# Ray Tracing with Octrees
+
+Once we have a data structure which represents the voxel space, we need an algorithm to take a ray and intersect it with the geometry.
+
+## Box Intersection
+
+Everything with raytracing against an octree boils down to intersecting against boxes. We can think of a box as three spaces between pairs of planes, one for each axis of the box.
+
+<image>
+
+We find the time *t* when the ray enters and exits each of these spaces. This gives us three pairs of (t_{min}) and
+
+To check whether a ray intersects a box, we need to check against the plane containing each face of the box. Intersecting with an octree world is especially easy because each voxel is *axis-aligned*, meaning each face of the cube is perpendicular to the x,y, or z-axis. This means each plane is defined
