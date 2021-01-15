@@ -58,29 +58,30 @@ const portalRMaterial = new THREE.ShaderMaterial({
     fragmentShader: document.getElementById('fragmentShader').textContent
 })
 
+const labTexture = new THREE.TextureLoader().load( "../assets/textures/lab.png" );
+labTexture.wrapS = THREE.RepeatWrapping;
+labTexture.wrapT = THREE.RepeatWrapping;
+const hazardTexture = new THREE.TextureLoader().load( "../assets/textures/hazard.png" );
+hazardTexture.wrapS = THREE.RepeatWrapping;
+hazardTexture.wrapT = THREE.RepeatWrapping;
+
+
 const activeMaterial = new THREE.MeshPhongMaterial({
-    color: 0xFFFFFF
+    map: hazardTexture
 });
 
-const behindMaterial = new THREE.MeshBasicMaterial({
-    color: 0xFFFFFF
-})
 
-const floorMaterial = new THREE.MeshPhongMaterial({
-    color: 0xFFFFFF
+const wallsMaterial = new THREE.MeshPhongMaterial({
+    color: 0xFFFFFF,
+    map: labTexture
 });
 
-const backMaterial = new THREE.MeshPhongMaterial({
-    color: 0xFFFFFF
-});
+const ambience = new THREE.AmbientLight(0x888888);
+scene.add(ambience);
 
-const leftMaterial = new THREE.MeshPhongMaterial({
-    color: 0xFFFFFF
-});
-
-const directionalLight = new THREE.PointLight( 0xFFFFFF, 1.4, 30, 1);
+const directionalLight = new THREE.PointLight( 0xFFFFFF, 0.7, 30, 2);
 directionalLight.castShadow = true;
-directionalLight.position.set(8, 8, 8);
+directionalLight.position.set(0, 8, 0);
 directionalLight.shadow.mapSize.width = window.innerWidth;
 directionalLight.shadow.mapSize.height = window.innerHeight;
 directionalLight.shadow.camera.near = 0.1;
@@ -93,9 +94,6 @@ directionalLight.shadow.camera.bottom = -d;
 scene.add(directionalLight);
 renderer.shadowMap.enabled = true;
 
-const pointLight = new THREE.PointLight(0xFF0000, 1.5, 20, 2);
-pointLight.position.set(0, 8, 0);
-//scene.add(pointLight);
 
 var directLightOn = true;
 
@@ -104,14 +102,14 @@ const meshes = [];
 const bodies = [];
 
 const lightSwitchGeometry = new THREE.BoxGeometry(0.5, 1,0.5);
-const lightSwitch = new THREE.Mesh( lightSwitchGeometry, backMaterial );
+const lightSwitch = new THREE.Mesh( lightSwitchGeometry, wallsMaterial );
 lightSwitch.position.set(-7.5, 4, 2);
 scene.add(lightSwitch);
 bodies.push(new CANNON.Body({ mass: 0, position: new CANNON.Vec3(-7.5, 4, 2) }));
 meshes.push(lightSwitch);
 
 const wallGeometry = new THREE.BoxGeometry(16,1,16);
-const floor = new THREE.Mesh( wallGeometry, floorMaterial );
+const floor = new THREE.Mesh( wallGeometry, wallsMaterial );
 floor.receiveShadow = true;
 meshes.push(floor);
 scene.add(floor);
@@ -124,7 +122,7 @@ physPlane.quaternion.setFromEuler(0, 0, 0);
 bodies.push(physPlane);
 world.addBody(physPlane);
 
-const farBackWall = new THREE.Mesh( wallGeometry, behindMaterial );
+const farBackWall = new THREE.Mesh( wallGeometry, wallsMaterial );
 farBackWall.receiveShadow = true;
 meshes.push(farBackWall);
 scene.add(farBackWall);
@@ -137,7 +135,7 @@ physFarBack.quaternion.setFromEuler(Math.PI / 2, 0, 0);
 bodies.push(physFarBack);
 world.addBody(physFarBack);
 
-const farRightWall = new THREE.Mesh( wallGeometry, behindMaterial );
+const farRightWall = new THREE.Mesh( wallGeometry, wallsMaterial );
 farRightWall.receiveShadow = true;
 meshes.push(farRightWall);
 scene.add(farRightWall);
@@ -150,7 +148,7 @@ physFarRight.quaternion.setFromEuler(0, 0, Math.PI / 2);
 bodies.push(physFarRight);
 world.addBody(physFarRight);
 
-const backWall = new THREE.Mesh( wallGeometry, backMaterial );
+const backWall = new THREE.Mesh( wallGeometry, wallsMaterial );
 meshes.push(backWall);
 backWall.receiveShadow = true;
 scene.add(backWall);
@@ -163,7 +161,7 @@ physBackWall.quaternion.setFromEuler(Math.PI / 2, 0, 0);
 bodies.push(physBackWall);
 world.addBody(physBackWall);
 
-const leftWall = new THREE.Mesh( wallGeometry, leftMaterial );
+const leftWall = new THREE.Mesh( wallGeometry, wallsMaterial );
 leftWall.receiveShadow = true;
 meshes.push(leftWall);
 scene.add(leftWall);
@@ -176,7 +174,7 @@ physLeftWall.quaternion.setFromEuler(0, 0, Math.PI / 2);
 bodies.push(physLeftWall);
 world.addBody(physLeftWall);
 
-const testCube = new THREE.Mesh( cubeGeometry, activeMaterial );
+/*const testCube = new THREE.Mesh( cubeGeometry, activeMaterial );
 testCube.castShadow = true;
 testCube.receiveShadow = true;
 meshes.push(testCube);
@@ -190,9 +188,42 @@ const physTestCube = new CANNON.Body({
 })
 physTestCube.quaternion.setFromEuler(0, -0.2, 0);
 bodies.push(physTestCube);
-world.addBody(physTestCube);
+world.addBody(physTestCube);*/
 
-const largeTestCube = new THREE.Mesh( largeCubeGeometry, activeMaterial );
+function SpawnCube(position, scale){
+    const mesh = new THREE.Mesh(cubeGeometry, activeMaterial);
+    mesh.scale.copy(scale);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    meshes.push(mesh);
+    scene.add(mesh);
+    const body = new CANNON.Body({
+        mass: 20 * Math.sqrt(scale.length()),
+        position: new CANNON.Vec3(position.x, position.y, position.z),
+        shape: new CANNON.Box(new CANNON.Vec3(scale.x / 2, scale.y / 2, scale.z / 2)),
+        linearDamping: 0.6,
+        angularDamping: 0.6
+    })
+    bodies.push(body);
+    world.addBody(body);
+}
+
+const numBoxes = randomBetween(2, 7);
+const boxSizes = []
+for(var i = 0; i < numBoxes; i++){
+    var size = new THREE.Vector3(randomBetween(1, 2), randomBetween(1, 2), randomBetween(1,2));
+    boxSizes.push(size);
+    console.log(size);
+}
+boxSizes.sort();
+var height = 0;
+for(var i = 0; i < numBoxes; i++){
+    height += boxSizes[i].y / 2;
+    SpawnCube(new THREE.Vector3(-4, height, -4), boxSizes[i]);
+    height += boxSizes[i].y / 2;
+}
+
+/*const largeTestCube = new THREE.Mesh( largeCubeGeometry, activeMaterial );
 largeTestCube.castShadow = true;
 largeTestCube.receiveShadow = true;
 meshes.push(largeTestCube);
@@ -207,7 +238,7 @@ const largPhysTestCube = new CANNON.Body({
 largPhysTestCube.position.set(-4.128, 1.5, -0.28);
 largPhysTestCube.quaternion.setFromEuler(0, 0.15, 0);
 bodies.push(largPhysTestCube);
-world.addBody(largPhysTestCube);
+world.addBody(largPhysTestCube);*/
 function randomBetween(min, max){
     return (Math.random() * (max - min) + min);
 }
@@ -227,28 +258,34 @@ var heldBody;
 var planelikeGeometry = new THREE.PlaneGeometry( 2, 4);
 
 var portalL = new THREE.Mesh( planelikeGeometry, portalLMaterial);
-portalL.position.set(-7.2,4,4);
 
 var portalR = new THREE.Mesh( planelikeGeometry, portalRMaterial );
 portalR.position.set(-3,4,-7.4);
-portalL.rotation.set(0, Math.PI / 2, 0);
 
 var portalLBody = new CANNON.Body({
+    linearDamping: 0.6,
+    angularDamping: 0.6,
     mass: 5,
     position: new CANNON.Vec3(-7.2, 4,4),
-    shape: new CANNON.Box(new CANNON.Vec3(1, 2, 0.1))
+    shape: new CANNON.Box(new CANNON.Vec3(1.1, 2.1, 0.1))
 });
 
-var portalBaseGeometry = new THREE.BoxGeometry( 2, 4, 0.2 );
-var portalLBase = new THREE.Mesh ( portalBaseGeometry, new THREE.MeshPhongMaterial() );
-portalL.add(portalLBase);
-portalLBase.position.set(0, 0, 0);
-scene.add(portalLBase);
+var portalBaseGeometry = new THREE.BoxGeometry( 2.2, 4.2, 0.2 );
+var portalLBase = new THREE.Mesh ( portalBaseGeometry, activeMaterial );
+var portalRBase = new THREE.Mesh ( portalBaseGeometry, activeMaterial );
+portalR.add(portalRBase);
+portalRBase.position.set(0, 0, -0.101);
+portalLBase.castShadow = true;
+portalLBase.receiveShadow = true;
+portalLBase.position.set(-7.2,4,4);
+portalLBase.rotation.set(0, Math.PI / 2, 0);
+portalLBase.add(portalL);
+portalL.position.set(0, 0,0.101);
 world.add(portalLBody);
 portalLBody.quaternion.setFromEuler(0, Math.PI / 2, 0);
-meshes.push(portalL);
+meshes.push(portalLBase);
 bodies.push(portalLBody);
-scene.add(portalL);
+scene.add(portalLBase);
 scene.add(portalR);
 
 function frame(currTime){
@@ -285,11 +322,9 @@ function onMouseDown (e) {
    if(hits.length > 0){
      if(hits[0].object.id == lightSwitch.id){
         if(directLightOn){
-            scene.remove(directionalLight);
-            scene.add(pointLight);
+            directionalLight.color.setHex(0xFF0000);
         }else{
-            scene.remove(pointLight);
-            scene.add(directionalLight);
+            directionalLight.color.setHex(0xFFFFFF);
         }
         directLightOn = !directLightOn;
         return;
@@ -352,16 +387,20 @@ const basicPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 6);
 var clipPlaneL;
 var clipPlaneR;
 function updatePortals() {
+    var worldPortalLPos = new THREE.Vector3();
+    var worldPortalLRot = new THREE.Quaternion();
+    var worldPortalLScale = new THREE.Vector3();
+    portalL.matrixWorld.decompose(worldPortalLPos, worldPortalLRot, worldPortalLScale);
     portalLCamera.position.copy(portalR.position);
     var forwardL = new THREE.Vector3(0, 0, 1).applyQuaternion(portalR.quaternion);
     clipPlaneL = new THREE.Plane(forwardL, -forwardL.dot(portalR.position));
-    var forwardR = new THREE.Vector3(0, 0, 1).applyQuaternion(portalL.quaternion);
-    clipPlaneR = new THREE.Plane(forwardR, -forwardR.dot(portalL.position));
+    var forwardR = new THREE.Vector3(0, 0, 1).applyQuaternion(worldPortalLRot);
+    clipPlaneR = new THREE.Plane(forwardR, -forwardR.dot(worldPortalLPos));
     var relToR = camera.position.clone().sub(portalR.position);
-    var relToL = camera.position.clone().sub(portalL.position);
-    var lToRPortal = portalR.quaternion.clone().multiply((new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0, 'XYZ')).multiply(portalL.quaternion)).conjugate())
+    var relToL = camera.position.clone().sub(worldPortalLPos);
+    var lToRPortal = portalR.quaternion.clone().multiply((new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0, 'XYZ')).multiply(worldPortalLRot)).conjugate())
     var rToLPortal = lToRPortal.clone().conjugate();
-    portalRCamera.position.copy(relToR.applyQuaternion(rToLPortal).add(portalL.position));
+    portalRCamera.position.copy(relToR.applyQuaternion(rToLPortal).add(worldPortalLPos));
     portalRCamera.quaternion.copy(rToLPortal.clone().multiply(camera.quaternion));
     portalLCamera.position.copy(relToL.applyQuaternion(lToRPortal).add(portalR.position));
     portalLCamera.quaternion.copy(lToRPortal.clone().multiply(camera.quaternion));

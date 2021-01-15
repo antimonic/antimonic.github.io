@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>A Simple Approach to Active Ragdolls In Unity</title>
+    <link rel="stylesheet" href="/css/default.css">
+    <script type="text/javascript"
+              src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+  </head>
+  <body>
+    <nav>
+      <a href="/">The Jungle Gym</a>
+    </nav>
+    <div class='main'>
+        <div class='header'>
+            <a href="/blog"><- Back</a>
+            <h1>A Simple Approach to Active Ragdolls In Unity</h1>
+        </div>
+    <section class="about-main">
+      <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">A Simple Approach to Active Ragdolls In Unity</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-01-15T01:02:20-05:00" itemprop="datePublished">Jan 15, 2021
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="passive-vs-active-ragdolls">Passive vs Active Ragdolls</h1>
+
+<p>A passive ragdoll is one that is not being applied any extra forces by the player. It is simply a skeleton (a hierarchy of empty transforms) connected with physics joints which use forces to keep bones together and constrain the joint rotations in a realistic way (i.e., an elbow should not bend all the way backwards).</p>
+
+<p>An active ragdoll is a passive ragdoll that has additional forces being applied to it by the game in order to achieve some visual or gameplay effect. This could be anything from simply keeping the skeleton uprightto using muscular forces to match a skeleton to an animation. In order to construct an active ragdoll, it is necessary first to have a decent passive ragdoll.</p>
+
+<h2 id="building-a-ragdoll-in-unity">Building a Ragdoll in Unity</h2>
+
+<p>Unity has a built-in <a href="https://docs.unity3d.com/Manual/wizard-RagdollWizard.html">Ragdoll Wizard</a> which will take any humanoid skeleton and build a reasonable ragdoll out of it. I recommend using this as a starting point, but the output of this is rarely perfect and you’ll probably need to spend time adjusting the collider sizes and angular limits until you get the type of ragdoll you want. You can also increase the mass of limbs to make their motion a bit slower and more realistic.</p>
+
+<p>If your ragdoll is not humanoid, you aren’t that far behind. For each joint that you want to have motion, add a rigidbody, collider, and character joint. Keep in mind that this does not need to be every single bone! Each finger probably does not need its own physics and following its parents forward kinematics will be good enough. For the humanoid model, there are only two joints for each limb, two for the spine, and one for the head. Set the ‘Connected Body’ field for the joint to the rigidboy it should be connected to, this is similar to parenting and usually the connected rigidbody lives on a parent.</p>
+
+<h2 id="the-easiest-way">The Easiest Way</h2>
+
+<p>Now that we have a passive ragdoll, we can start with the simplest type of ragdolls which involve simply keeping the skeleton upright and dragging the rest of the limbs with them. For humanoid skeletons, this usually means appling a force and a torque to the pelvis bone (the root of both the skeleton and the physics joints), and letting physics handle the rest of the motion.</p>
+
+  </div><a class="u-url" href="/gametech/2021/01/15/simple-unity-active-ragdolls.html" hidden></a>
+</article>
+
+    </section>
+    </div>
+    <footer>
+      &copy; to me
+    </footer>
+  </body>
+</html>
