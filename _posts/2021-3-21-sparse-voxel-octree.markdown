@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Voxel Game Engine - Sparse Voxel Octrees"
-date:   2021-2-30 12:01:48 -0500
+date:   2021-3-21 12:01:48 -0500
 categories: graphics
 desc: Voxel Octrees provide a method to render voxel worlds with ray tracing.
 ---
